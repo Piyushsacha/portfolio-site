@@ -1,0 +1,27 @@
+name: Check for Broken Links
+
+on:
+  push:
+    branches:
+      - main   
+  schedule:
+    - cron: '0 2 * * *'  
+
+jobs:
+  lychee-link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Lychee (Broken Link Checker)
+        uses: lycheeverse/lychee-action@v1.8.0
+        with:
+          args: --verbose --no-progress --exclude-mail --accept 200,403,429 './**/*.md' './**/*.html'
+
+      - name: Upload Lychee Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee/out.md
